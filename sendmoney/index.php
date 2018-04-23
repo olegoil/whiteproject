@@ -107,7 +107,7 @@
                             <select id="walletSend" name="walletSend" required="required" class="form-control col-md-7 col-xs-12">
                               <?php
                                 echo '<option value="'.$sql->getBalance(0)['recid'].'">WCR</option>';
-                                echo '<option value="'.$sql->getBalance(1)['recid'].'">WCUR</option>';
+                                // echo '<option value="'.$sql->getBalance(1)['recid'].'">WCUR</option>';
                                 // echo '<option value="'.$sql->getBalance(2)['recid'].'">Bitcoin</option>';
                                 // echo '<option value="'.$sql->getBalance(3)['recid'].'">Ethereum</option>';
                               ?>
