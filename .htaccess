@@ -1,0 +1,18 @@
+Options +FollowSymLinks
+RewriteEngine on
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)([^/])$	/$1$2/ [L,R=301]
+
+RedirectMatch 301 ^/$ /authorize/
+
+RewriteRule    ^authorize/$    index.php    [NC,L]
+RewriteRule    ^login/$    login.php    [NC,L]
+RewriteRule    ^main/$    main.php    [NC,L]
+RewriteRule    ^404/$    page_404.php    [NC,L]
+RewriteRule    ^500/$    page_500.php    [NC,L]
+
+ErrorDocument 404 /authorize/
+
+Header add Access-Control-Allow-Origin "*"
+Header add Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"

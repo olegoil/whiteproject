@@ -320,69 +320,6 @@
     })
   }
 
-  function ajaxSend2(val1, val2, val3, val4) {
-    var datastr = 'act=adminproof2&adr='+val1+'&amnt='+val2;
-    $.ajax({
-      type: 'post',
-      url: '/coms/mktransaction.php',
-      data: datastr,
-      success: function(suc) {
-        console.log(JSON.stringify(suc));
-        var suc = JSON.parse(suc);
-        if(suc.success == 1) {
-          $('#transTable').DataTable().ajax.reload();
-        }
-        else if(suc.success == 0) {
-          new PNotify({
-            title: "Error",
-            type: "error",
-            text: "Not enought money!",
-            nonblock: {
-              nonblock: true
-            },
-            before_close: function(PNotify) {
-              // You can access the notice's options with this. It is read only.
-              //PNotify.options.text;
-
-              // You can change the notice's options after the timer like this:
-              PNotify.update({
-                title: PNotify.options.title + " - Enjoy your Stay",
-                before_close: null
-              });
-              PNotify.queueRemove();
-              return false;
-            }
-          });
-        }
-        else {
-          new PNotify({
-            title: "Error",
-            type: "error",
-            text: "Transaction could not be recorded!",
-            nonblock: {
-              nonblock: true
-            },
-            before_close: function(PNotify) {
-              // You can access the notice's options with this. It is read only.
-              //PNotify.options.text;
-
-              // You can change the notice's options after the timer like this:
-              PNotify.update({
-                title: PNotify.options.title + " - Enjoy your Stay",
-                before_close: null
-              });
-              PNotify.queueRemove();
-              return false;
-            }
-          });
-        }
-      },
-      error: function(err) {
-          alert('Some error occured!')
-      }
-    })
-  }
-
   function transallow(val1, val2) {
     if(confirm("Allow this transaction "+val1)) {
         ajaxSend(val1, val2);

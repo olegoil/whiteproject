@@ -908,10 +908,11 @@
     }
 
     function transallow2(val1, val2, val3) {
-        if(confirm("Allow this transaction "+val1)) {
+        // if(confirm("Allow this transaction "+val1)) {
             var val2 = val2.split(' ')[0];
-            App.mintingRequest(val1, val2, 1);
-        }
+            console.log(val2)
+            App.mintingRequest(val1, val2, val3);
+        // }
     }
 
     function transdeny(val1, val2) {
@@ -921,6 +922,7 @@
     }
 
     function sendTokens(full0, full3, full7, full12) {
+        var full3 = full3.split(' ')[0];
         App.transferTrans(full7, full3, full0);
     }
 

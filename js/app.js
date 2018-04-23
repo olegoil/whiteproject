@@ -297,7 +297,6 @@ window.App = {
                     url: '/coms/mktransaction.php',
                     data: datastr,
                     success: function(suc) {
-                        App.transfer(val3, val2);
                         // console.log(JSON.stringify(suc));
                         $('#transTable').DataTable().ajax.reload();
                     },
@@ -553,39 +552,38 @@ window.App = {
 
     // Возвращает является ли пользователь эмитентом
     isManagerSend: function (val1, val2, val3, val4, val5) {
-        WhiteCoin.isManager(web3.eth.defaultAccount, (error, result) => {
-            // TODO: Добавить сюда обработку результата
-            console.log('MANAGER SEND ALLOW: '+result);
+        App.mintWhitecoinAllow(val1, val2, val3, val4, val5, 1);
+        // WhiteCoin.isManager(web3.eth.defaultAccount, (error, result) => {
+        //     // TODO: Добавить сюда обработку результата
+        //     console.log('MANAGER SEND ALLOW: '+result);
             
-            if(result) {
-                if(confirm("Allow this transaction "+val1)) {
-                    App.mintWhitecoinAllow(val5, 1);
-                }
-            }
-            else {
-                new PNotify({
-                    title: "White Standard + Metamask",
-                    type: "error",
-                    text: "Be sure you had logged in with Metamask.",
-                    nonblock: {
-                        nonblock: true
-                    },
-                    before_close: function(PNotify) {
-                        // You can access the notice's options with this. It is read only.
-                        //PNotify.options.text;
+        //     if(result) {
+        //         App.mintWhitecoinAllow(val1, val2, val3, val4, val5, 1);
+        //     }
+        //     else {
+        //         new PNotify({
+        //             title: "White Standard + Metamask",
+        //             type: "error",
+        //             text: "Be sure you had logged in with Metamask.",
+        //             nonblock: {
+        //                 nonblock: true
+        //             },
+        //             before_close: function(PNotify) {
+        //                 // You can access the notice's options with this. It is read only.
+        //                 //PNotify.options.text;
             
-                        // You can change the notice's options after the timer like this:
-                        PNotify.update({
-                            title: PNotify.options.title + " - Enjoy your Stay",
-                            before_close: null
-                        });
-                        PNotify.queueRemove();
-                        return false;
-                    }
-                });
-            }
-            // return result;
-        })
+        //                 // You can change the notice's options after the timer like this:
+        //                 PNotify.update({
+        //                     title: PNotify.options.title + " - Enjoy your Stay",
+        //                     before_close: null
+        //                 });
+        //                 PNotify.queueRemove();
+        //                 return false;
+        //             }
+        //         });
+        //     }
+        //     // return result;
+        // })
     },
 
     // Возвращает является ли пользователь эмитентом
@@ -663,22 +661,140 @@ window.App = {
     // передать их через transfer
     // mintRequest - номер запроса
     // decision - 1 - если запрос принят, 2 - если запрос отклоненен
-    mintWhitecoinAllow: function (mintRequest, decision) {
+    mintWhitecoinAllow: function (val1, val2, val3, val4, mintRequest, decision) {
         WhiteCoin.mintWhitecoin(mintRequest, decision, (error, result) => {
             // TODO: Добавить сюда обработку результата
             console.log('MINT WHITECOIN ALLOW '+result);
             if(result) {
-                ajaxSend2(val1, val2, val3, val4);
+                var datastr = 'act=adminproof2&adr='+val1+'&amnt='+val2;
+                $.ajax({
+                    type: 'post',
+                    url: '/coms/mktransaction.php',
+                    data: datastr,
+                    success: function(suc) {
+                        console.log(JSON.stringify(suc));
+                        var suc = JSON.parse(suc);
+                        if(suc.success == 1) {
+                            $('#transTable').DataTable().ajax.reload();
+                        }
+                        else if(suc.success == 0) {
+                            new PNotify({
+                                title: "Error",
+                                type: "error",
+                                text: "Not enought money!",
+                                nonblock: {
+                                    nonblock: true
+                                },
+                                before_close: function(PNotify) {
+                                    // You can access the notice's options with this. It is read only.
+                                    //PNotify.options.text;
+                    
+                                    // You can change the notice's options after the timer like this:
+                                    PNotify.update({
+                                    title: PNotify.options.title + " - Enjoy your Stay",
+                                    before_close: null
+                                    });
+                                    PNotify.queueRemove();
+                                    return false;
+                                }
+                            });
+                        }
+                        else {
+                            new PNotify({
+                                title: "Error",
+                                type: "error",
+                                text: "Transaction could not be recorded!",
+                                nonblock: {
+                                    nonblock: true
+                                },
+                                before_close: function(PNotify) {
+                                    // You can access the notice's options with this. It is read only.
+                                    //PNotify.options.text;
+                    
+                                    // You can change the notice's options after the timer like this:
+                                    PNotify.update({
+                                    title: PNotify.options.title + " - Enjoy your Stay",
+                                    before_close: null
+                                    });
+                                    PNotify.queueRemove();
+                                    return false;
+                                }
+                            });
+                        }
+                    },
+                    error: function(err) {
+                        alert('Some error occured!')
+                    }
+                })
             }
         })
     },
 
-    mintWhitecoinDeny: function (mintRequest, decision) {
+    mintWhitecoinDeny: function (val1, val2, val3, val4, mintRequest, decision) {
         WhiteCoin.mintWhitecoin(mintRequest, decision, (error, result) => {
             // TODO: Добавить сюда обработку результата
             console.log('MINT WHITECOIN DENY '+result);
             if(result) {
-                ajaxSend2(val1, val2, val3, val4);
+                var datastr = 'act=adminproof2&adr='+val1+'&amnt='+val2;
+                $.ajax({
+                    type: 'post',
+                    url: '/coms/mktransaction.php',
+                    data: datastr,
+                    success: function(suc) {
+                        console.log(JSON.stringify(suc));
+                        var suc = JSON.parse(suc);
+                        if(suc.success == 1) {
+                            $('#transTable').DataTable().ajax.reload();
+                        }
+                        else if(suc.success == 0) {
+                            new PNotify({
+                                title: "Error",
+                                type: "error",
+                                text: "Not enought money!",
+                                nonblock: {
+                                    nonblock: true
+                                },
+                                before_close: function(PNotify) {
+                                    // You can access the notice's options with this. It is read only.
+                                    //PNotify.options.text;
+                    
+                                    // You can change the notice's options after the timer like this:
+                                    PNotify.update({
+                                    title: PNotify.options.title + " - Enjoy your Stay",
+                                    before_close: null
+                                    });
+                                    PNotify.queueRemove();
+                                    return false;
+                                }
+                            });
+                        }
+                        else {
+                            new PNotify({
+                                title: "Error",
+                                type: "error",
+                                text: "Transaction could not be recorded!",
+                                nonblock: {
+                                    nonblock: true
+                                },
+                                before_close: function(PNotify) {
+                                    // You can access the notice's options with this. It is read only.
+                                    //PNotify.options.text;
+                    
+                                    // You can change the notice's options after the timer like this:
+                                    PNotify.update({
+                                    title: PNotify.options.title + " - Enjoy your Stay",
+                                    before_close: null
+                                    });
+                                    PNotify.queueRemove();
+                                    return false;
+                                }
+                            });
+                        }
+                    },
+                    error: function(err) {
+                        alert('Some error occured!')
+                    }
+                })
             }
         })
     },
