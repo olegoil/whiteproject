@@ -20,7 +20,7 @@ window.App = {
             // console.log(result)
             contractAddress = web3.eth.defaultAccount;
             for(var i=0;i<document.getElementsByClassName('ethereum').length;i++) {
-                document.getElementsByClassName('ethereum')[i].innerHTML = result;
+                document.getElementsByClassName('ethereum')[i].innerHTML = (parseInt(result)/1000000000000000000).toFixed(8);
             }
             for(var i=0;i<document.getElementsByClassName('ethereum2').length;i++) {
                 document.getElementsByClassName('ethereum2')[i].innerHTML = web3.eth.defaultAccount;
