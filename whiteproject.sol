@@ -392,7 +392,3 @@ contract WhiteCoin is ERC20  {
     
 
 }
-
-0xc5d3ad25ce459bee9fefe4696121d7cb074cb4cd
-// For metamask whitecoin token
-0x85c015a9e36eb50c574b3b6a049be05c62f0e938
