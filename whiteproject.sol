@@ -1,4 +1,4 @@
-pragma solidity ^ 0.4 .19;
+pragma solidity ^0.4.21;
 
 contract ERC223ReceivingContract { 
 /**
@@ -70,8 +70,7 @@ contract ERC20 {
 
 contract WhiteCoin is ERC20  {
 
-    using SafeMath
-    for uint256;
+    using SafeMath for uint256;
     /* Public variables of the token */
     string public standard = 'WHITE 1.0';
     string public name;
@@ -111,6 +110,7 @@ contract WhiteCoin is ERC20  {
     event Transfer(address indexed from, address indexed to, uint value, bytes data);
     event Transfer(address indexed from, address indexed to, uint value, bytes data, string _stringdata, uint256 _numdata );
     event Approval(address indexed owner, address indexed spender, uint value);
+    event NewMintingRequest(uint256 indexed amount, uint256 indexed id);
 
     /* This notifies clients about the amount burnt */
     event Burn(address indexed from, uint256 value);
@@ -133,7 +133,7 @@ contract WhiteCoin is ERC20  {
     }
 
     /* Initializes contract with initial supply tokens to the creator of the contract */
-    function WhiteCoin() {
+    constructor() public {
 
         uint256 _initialSupply = 10000000000000000000000; 
         uint8 decimalUnits = 18; // 
@@ -145,11 +145,6 @@ contract WhiteCoin is ERC20  {
         decimals = decimalUnits; // Amount of decimals for display purposes
         WhiteCoinActive = true;
         manager [ msg.sender ] = true;
-        
-        //manager [ someaddress ] = true;
-        //manager [ someaddress ] = true;
-        //manager [ someaddress ] = true;
-        
     }
 
    
@@ -197,13 +192,13 @@ contract WhiteCoin is ERC20  {
     }
 
 
-    function transfer(address _to, uint256 _value) returns(bool ok) {
+    function transfer(address _to, uint256 _value) public returns(bool ok) {
         
         
         require ( WhiteCoinActive );
         require ( frozenAccount [ msg.sender ] == false );
-        if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+        require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
+        require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
         bytes memory empty;
         
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(  _value ); // Subtract from the sender
@@ -214,7 +209,7 @@ contract WhiteCoin is ERC20  {
             receiver.tokenFallback(msg.sender, _value, empty);
         }
         
-        Transfer(msg.sender, _to, _value); // Notify anyone listening that this transfer took place
+        emit Transfer(msg.sender, _to, _value); // Notify anyone listening that this transfer took place
         return true;
     }
     
@@ -222,8 +217,8 @@ contract WhiteCoin is ERC20  {
         
         require ( WhiteCoinActive );
         require ( frozenAccount [ msg.sender ] == false );
-        if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+        require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
+        require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
         bytes memory empty;
         
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(  _value ); // Subtract from the sender
@@ -234,7 +229,7 @@ contract WhiteCoin is ERC20  {
             receiver.tokenFallback(msg.sender, _value, _data);
         }
         
-        Transfer(msg.sender, _to, _value, _data); // Notify anyone listening that this transfer took place
+        emit Transfer(msg.sender, _to, _value, _data); // Notify anyone listening that this transfer took place
         return true;
     }
     
@@ -242,8 +237,8 @@ contract WhiteCoin is ERC20  {
         
         require ( WhiteCoinActive );
         require ( frozenAccount [ msg.sender ] == false );
-        if (_to == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
+        require(_to != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
+        require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
         bytes memory empty;
         
         balanceOf[msg.sender] = balanceOf[msg.sender].sub(  _value ); // Subtract from the sender
@@ -254,7 +249,7 @@ contract WhiteCoin is ERC20  {
             receiver.tokenFallback(msg.sender, _value, _data, _stringdata, _numdata);
         }
         
-        Transfer(msg.sender, _to, _value, _data , _stringdata, _numdata ); // Notify anyone listening that this transfer took place
+        emit Transfer(msg.sender, _to, _value, _data , _stringdata, _numdata ); // Notify anyone listening that this transfer took place
         return true;
     }
     
@@ -283,12 +278,12 @@ contract WhiteCoin is ERC20  {
     function approve(address _spender, uint256 _value)
     returns(bool success) {
         allowance[msg.sender][_spender] = _value;
-        Approval( msg.sender ,_spender, _value);
+        emit Approval( msg.sender ,_spender, _value);
         return true;
     }
 
     /* Approve and then communicate the approved contract in a single tx */
-    function approveAndCall(address _spender, uint256 _value, bytes _extraData)
+    function approveAndCall(address _spender, uint256 _value, bytes _extraData) public
     returns(bool success) {
         tokenRecipient spender = tokenRecipient(_spender);
         if (approve(_spender, _value)) {
@@ -297,94 +292,93 @@ contract WhiteCoin is ERC20  {
         }
     }
 
-    function allowance(address _owner, address _spender) constant returns(uint256 remaining) {
+    function allowance(address _owner, address _spender) public constant returns(uint256 remaining) {
         return allowance[_owner][_spender];
     }
 
     /* A contract attempts to get the coins */
-    function transferFrom(address _from, address _to, uint256 _value) returns(bool success) {
+    function transferFrom(address _from, address _to, uint256 _value) public returns(bool success) {
         
         require ( WhiteCoinActive );
         require ( frozenAccount [ _from ] == false );
-        if (_from == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] < _value) throw; // Check if the sender has enough
-        if (balanceOf[_to] + _value < balanceOf[_to]) throw; // Check for overflows
-        if (_value > allowance[_from][msg.sender]) throw; // Check allowance
+        require(_from != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
+        require(balanceOf[_from] >= _value); // Check if the sender has enough
+        require(_value <= allowance[_from][msg.sender]); // Check allowance
         balanceOf[_from] = balanceOf[_from].sub( _value ); // Subtract from the sender
         balanceOf[_to] = balanceOf[_to].add( _value ); // Add the same to the recipient
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub( _value ); 
-        Transfer(_from, _to, _value);
+        emit Transfer(_from, _to, _value);
         return true;
     }
   
-    function burn(uint256 _value) returns(bool success) {
+    function burn(uint256 _value) public returns(bool success) {
         
         require ( WhiteCoinActive );
-        if (balanceOf[msg.sender] < _value) throw; // Check if the sender has enough
-        if ( (totalSupply - _value) <  ( initialSupply / 2 ) ) throw;
+        require(balanceOf[msg.sender] >= _value); // Check if the sender has enough
+        require( (totalSupply - _value) >=  ( initialSupply / 2 ) );
         balanceOf[msg.sender] = balanceOf[msg.sender].sub( _value ); // Subtract from the sender
         totalSupply = totalSupply.sub( _value ); // Updates totalSupply
-        Burn(msg.sender, _value);
+        emit Burn(msg.sender, _value);
         return true;
     }
 
-   function burnFrom(address _from, uint256 _value) returns(bool success) {
+   function burnFrom(address _from, uint256 _value) public returns(bool success) {
         
         require ( WhiteCoinActive );
-        if (_from == 0x0) throw; // Prevent transfer to 0x0 address. Use burn() instead
-        if (balanceOf[_from] < _value) throw; 
-        if (_value > allowance[_from][msg.sender]) throw; 
+        require(_from != 0x0); // Prevent transfer to 0x0 address. Use burn() instead
+        require(balanceOf[_from] >= _value); 
+        require(_value <= allowance[_from][msg.sender]); 
         balanceOf[_from] = balanceOf[_from].sub( _value ); 
         allowance[_from][msg.sender] = allowance[_from][msg.sender].sub( _value ); 
         totalSupply = totalSupply.sub( _value ); // Updates totalSupply
-        Burn(_from, _value);
+        emit Burn(_from, _value);
         return true;
     }
     
     
     
-    function mintingRequest ( uint256 _amount , string _ref ) onlyMinter returns (uint256)  {
-        
+    function mintingRequest ( uint256 _amount , string _ref ) public onlyMinter returns (uint256) {
+        uint256 id = mintRequestCount;
         mintRequestCount++;
         mintRequest[ mintRequestCount ] = _amount;
         mintRequestReference[ mintRequestCount ] = _ref;
         mintRequestor[ mintRequestCount ] = msg.sender;
-        
+        emit NewMintingRequest(_amount, id);
     }
     
-    function freezeAccount ( address _address ) onlyManager {
+    function freezeAccount ( address _address ) onlyManager public {
         
         frozenAccount [ _address ] = true;
         
     }
     
-    function unfreezeAccount ( address _address ) onlyManager {
+    function unfreezeAccount ( address _address ) onlyManager public{
         
         frozenAccount [ _address ] = false;
         
     }
     
     
-    function stopWhiteCoinTrading (  ) onlyManager {
+    function stopWhiteCoinTrading (  ) onlyManager public {
         
         WhiteCoinActive = false;
         
     }
     
-    function startWhitecoinTrading () onlyManager {
+    function startWhitecoinTrading () onlyManager public {
         
         WhiteCoinActive = true;
         
     }
     
     
-    function mintWhitecoin( uint _mintRequest, uint8 _decision ) onlyManager returns(bool success) {
+    function mintWhitecoin( uint _mintRequest, uint8 _decision ) public onlyManager returns(bool success) {
         
         require ( _mintRequest != 0 && _mintRequest <= mintRequestCount &&  mintRequestStatus [ _mintRequest ] == 0 && _decision != 0 && _decision < 3 );
         if ( _decision == 2 )  { mintRequestStatus [ _mintRequest ] = 2; return true; } // Mint Declined
         balanceOf[ mintRequestor[_mintRequest] ] = balanceOf[ mintRequestor[_mintRequest] ].add( mintRequest[_mintRequest] ); // add minted tokens to Minters account
         totalSupply = totalSupply.add( mintRequest[ _mintRequest ] ); // Updates totalSupply
-        Minted( mintRequestor[_mintRequest] , mintRequest[_mintRequest]);
+        emit Minted( mintRequestor[_mintRequest], mintRequest[_mintRequest]);
         mintRequestStatus [ _mintRequest ] = 1;
         return true;
         
