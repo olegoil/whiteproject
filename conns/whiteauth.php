@@ -147,7 +147,7 @@ class sql {
         if($rows == 0) {
 
             $uip = $this->get_client_ip_server();
-            $queryIns = "INSERT INTO users (user_id, user_email, user_pwd, user_when, user_ip, user_confirm, user_type) VALUES ('$recID', '$emailhash', '$pwd', '$when', '$uip', 0, 0)";
+            $queryIns = "INSERT INTO users (user_id, user_email, user_pwd, user_when, user_ip, user_confirm, user_mobile_confirm, user_type) VALUES ('$recID', '$emailhash', '$pwd', '$when', '$uip', 0, 1, 0)";
             $insUsr = $this->dbquery($queryIns);
 
             $querySel = "SELECT * FROM users WHERE user_email = '$emailhash' AND user_pwd = '$pwd' AND user_when = '$when'";
@@ -205,7 +205,7 @@ class sql {
         if($rows == 0) {
 
             $uip = $this->get_client_ip_server();
-            $queryIns = "INSERT INTO users (user_id, user_email, user_pwd, user_when, user_ip, user_confirm, user_type, user_name, user_lastname) VALUES ('$recID', '$emailhash', '$pwd', '$when', '$uip', 1, 2, '$firstname', '$lastname')";
+            $queryIns = "INSERT INTO users (user_id, user_email, user_pwd, user_when, user_ip, user_confirm, user_mobile_confirm, user_type, user_name, user_lastname) VALUES ('$recID', '$emailhash', '$pwd', '$when', '$uip', 1, 1, 2, '$firstname', '$lastname')";
             $insUsr = $this->dbquery($queryIns);
 
             $querySel = "SELECT * FROM users WHERE user_email = '$emailhash' AND user_pwd = '$pwd' AND user_when = '$when'";
@@ -511,7 +511,7 @@ class sql {
                 $address = $results['user_adress'];
             }
 
-            $qupd = "UPDATE users SET user_name = '$name', user_lastname='$lastname', user_mobile='$mobile', user_skype='$skype', user_country='$country', user_city='$city', user_postal='$plz', user_adress='$address' WHERE user_id='$u'";
+            $qupd = "UPDATE users SET user_name = '$name', user_lastname='$lastname', user_mobile='$mobile', user_mobile_confirm='1', user_skype='$skype', user_country='$country', user_city='$city', user_postal='$plz', user_adress='$address' WHERE user_id='$u'";
             $this->dbquery($qupd);
             return json_encode(array("success" => 1), JSON_UNESCAPED_UNICODE);
     

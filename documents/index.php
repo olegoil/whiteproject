@@ -226,10 +226,10 @@
             }
           },
           {
-            title: 'UserId', 
+            title: 'User', 
             "mData": 2,
             "mRender": function(data, type, full) {
-              return full[6];
+              return '<a href="javascript:;" style="height:25px;" onclick="showdetails(\''+full[0]+'\', \''+full[6]+'\', \''+full[8]+'\', \''+full[9]+'\'); return false;">'+full[8]+' '+full[9]+'</a>';
             }
           },
           {
@@ -301,6 +301,13 @@
         if(confirm("Deny this document "+val1)) {
             ajaxSend(val1, val2);
         }
+    }
+
+    function showdetails(val0, val6, val8, val9) {
+      $('#myModalLabel').html('Details of Document: <b>'+val0+'</b>');
+      var detailsbody = '<tr><td><strong>User ID</strong></td><td>'+val6+'</td></tr><tr><td><strong>Name</strong></td><td>'+val8+'</td></tr><tr><td><strong>Lastname</strong></td><td>'+val9+'</td></tr><tr><td>Details</td><td><a href="../profile/?usr='+val6+'">Go to Profile</a></td></tr></table>';
+      $('#detailsbody').html(detailsbody);
+      $('#myModal').modal('show');
     }
 
   </script>

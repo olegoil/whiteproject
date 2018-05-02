@@ -231,11 +231,12 @@
             title: 'ID', 
             "mData": 0,
             "mRender": function(data, type, full) {
-              var id = full[0];
-              if(full[11]) {
-                id = 'Wire: '+full[11];
-              }
-              return id;
+              // var id = full[0];
+              // if(full[11]) {
+              //   id = 'Wire: '+full[11];
+              // }
+              // return id;
+              return full[13];
             }
           },
           {

@@ -65,47 +65,71 @@
                                 <div class="panel-body">
 
                                     <form id="exchng" name="exchng">
-                                        <div class="form-group">
-                                            <label class="control-label col-md-6 col-sm-6 col-xs-12" for="usdwcr">USD to WCR
+                                        <label class="control-label col-md-6 col-sm-6 col-xs-12" for="usdwcr">USD to WCR
+                                            <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                                 <input type="text" id="usdwcr" name="usdwcr" required="required" class="form-control col-md-7 col-xs-12" value="<?php echo $sql->getFee('USD', 'WCR')['fee']; ?>" >
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-6 col-sm-6 col-xs-12" for="wcrusd">WCR to USD
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary">%</button>
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <label class="control-label col-md-6 col-sm-6 col-xs-12" for="wcrusd">WCR to USD
+                                            <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                                 <input type="text" id="wcrusd" name="wcrusd" required="required" class="form-control col-md-7 col-xs-12" value="<?php echo $sql->getFee('WCR', 'USD')['fee']; ?>" >
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-6 col-sm-6 col-xs-12" for="wcrwcur">WCR to WCUR
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary">%</button>
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <label class="control-label col-md-6 col-sm-6 col-xs-12" for="wcrwcur">WCR to WCUR
+                                            <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                                 <input type="text" id="wcrwcur" name="wcrwcur" required="required" class="form-control col-md-7 col-xs-12" value="<?php echo $sql->getFee('WCR', 'WCUR')['fee']; ?>" >
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-6 col-sm-6 col-xs-12" for="ethwcur">ETH to WCUR
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary">%</button>
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <label class="control-label col-md-6 col-sm-6 col-xs-12" for="ethwcur">ETH to WCUR
+                                            <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                                 <input type="text" id="ethwcur" name="ethwcur" required="required" class="form-control col-md-7 col-xs-12" value="<?php echo $sql->getFee('ETH', 'WCUR')['fee']; ?>" >
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-6 col-sm-6 col-xs-12" for="bawcr">BA to WCR
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary">%</button>
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <label class="control-label col-md-6 col-sm-6 col-xs-12" for="bawcr">Bank Account to WCR
+                                            <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                                 <input type="text" id="bawcr" name="bawcr" required="required" class="form-control col-md-7 col-xs-12" value="<?php echo $sql->getFee('BA', 'WCR')['fee']; ?>" >
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-6 col-sm-6 col-xs-12" for="cawcr">CA to WCR
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary">%</button>
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <label class="control-label col-md-6 col-sm-6 col-xs-12" for="cawcr">ACH transfer to WCR
+                                            <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                                 <input type="text" id="cawcr" name="cawcr" required="required" class="form-control col-md-7 col-xs-12" value="<?php echo $sql->getFee('CA', 'WCR')['fee']; ?>" >
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-6 col-sm-6 col-xs-12" for="ccwcr">CC to WCR
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary">%</button>
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <label class="control-label col-md-6 col-sm-6 col-xs-12" for="ccwcr">Credit Card to WCR
+                                            <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                                 <input type="text" id="ccwcr" name="ccwcr" required="required" class="form-control col-md-7 col-xs-12" value="<?php echo $sql->getFee('CC', 'WCR')['fee']; ?>" >
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
-                                            <label class="control-label col-md-6 col-sm-6 col-xs-12" for="btcwcr">BTC to WCR
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary">%</button>
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <label class="control-label col-md-6 col-sm-6 col-xs-12" for="btcwcr">BTC to WCR
+                                            <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                                 <input type="text" id="btcwcr" name="btcwcr" required="required" class="form-control col-md-7 col-xs-12" value="<?php echo $sql->getFee('BTC', 'WCR')['fee']; ?>" >
-                                            </label>
-                                        </div>
-                                        <div class="form-group">
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary">%</button>
+                                                </span>
+                                            </div>
+                                        </label>
+                                        <div class="input-group col-md-6 col-sm-6 col-xs-12">
                                             <label class="control-label col-md-6 col-sm-6 col-xs-12"> &nbsp;
                                                 <button type="button" class="form-control col-md-7 col-xs-12 btn btn-success feesave">Save</button>
                                             </label>
@@ -228,9 +252,10 @@
     }
 
     function sendAjax(i) {
-        var elements = document.getElementById("exchng").elements;
+        var elements = document.forms["exchng"].getElementsByTagName("input");
         var element = elements[i];
         var ell = elements.length;
+        console.log(element);
         if(element && i < ell) {
             if(element.id) {
                 var from = '';
@@ -289,6 +314,7 @@
                     url: '/coms/mktransaction.php',
                     data: jsonstr,
                     success: function(res) {
+                        console.log(JSON.stringify(res))
                         if(res.success == '1') {
                             new PNotify({
                                 title: "Success",
@@ -349,7 +375,6 @@
     }
 
     $(function() {
-        var elements = document.getElementById("exchng").elements;
         $('.feesave').on('click', function() {
             if($('#usdwcr').val() != '' && $('#wcrusd').val() != '' && $('#wcrwcur').val() != '' && $('#ethwcur').val() != '' && $('#bawcr').val() != '' && $('#cawcr').val() != '' && $('#ccwcr').val() != '') {
 

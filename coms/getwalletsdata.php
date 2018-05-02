@@ -109,6 +109,8 @@ if(isset($_POST['req']) && $_POST['req'] == 'transactions') {
 	$getDataLengthRows  = odbc_num_rows($getDataLength);
 
 	if($getDataRows > 0) {
+
+		$numId = $getDataRows;
 		
 		do {
 
@@ -129,13 +131,15 @@ if(isset($_POST['req']) && $_POST['req'] == 'transactions') {
 
 			}
 			
-			$gotdata['aaData'][] = array($row_getData['recid'], $row_getData['userid'], $amountfrom, $amountto, $row_getData['commissions'], $row_getData['notes'], $row_getData['wallet_from'], $walletTo, date('m/d/Y h:i A', $row_getData['datetime']), $row_getData['acception'], $row_getData['state'], $row_getData['transid'], $row_getData['mintreq']);
+			$gotdata['aaData'][] = array($row_getData['recid'], $row_getData['userid'], $amountfrom, $amountto, $row_getData['commissions'], $row_getData['notes'], $row_getData['wallet_from'], $walletTo, date('m/d/Y h:i A', $row_getData['datetime']), $row_getData['acception'], $row_getData['state'], $row_getData['transid'], $row_getData['mintreq'], $numId);
+
+			$numId--;
 		
 		} while ($row_getData = odbc_fetch_array($getData));
 	
 	}
 	else {
-		$gotdata['aaData'][] = array(null, null, null, null, null, null, null, null, null, null, null, null);
+		$gotdata['aaData'][] = array(null, null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 	
 	$gotdata['sEcho'] = intval($_POST['sEcho']);
@@ -589,16 +593,25 @@ else if(isset($_POST['req']) && $_POST['req'] == 'documents') {
   $getDataLengthRows  = odbc_num_rows($getDataLength);
 
   if($getDataRows > 0) {
+
+	$numId = $getDataRows;
 	
 	do {
+
+		$query_getUser = "SELECT * FROM users WHERE user_id='".$row_getData['userid']."' ORDER BY user_when DESC";
+		$getUser = $sql->dbquery($query_getUser);
+		$row_getUser = odbc_fetch_array($getUser);
+		$getRowsUser  = odbc_num_rows($getUser);
         
-        $gotdata['aaData'][] = array($row_getData['recid'], $row_getData['doctype'], date('m/d/Y h:i A', $row_getData['datetime']), $row_getData['docdel'], $row_getData['confirmed'], date('m/d/Y h:i A', $row_getData['confdatetime']), $row_getData['userid'], $row_getData['docurl']);
+		$gotdata['aaData'][] = array($row_getData['recid'], $row_getData['doctype'], date('m/d/Y h:i A', $row_getData['datetime']), $row_getData['docdel'], $row_getData['confirmed'], date('m/d/Y h:i A', $row_getData['confdatetime']), $row_getData['userid'], $row_getData['docurl'], $row_getUser['user_name'], $row_getUser['user_lastname'], $numId);
+		
+		$numId--;
 	  
 	} while ($row_getData = odbc_fetch_array($getData));
   
   }
   else {
-	  $gotdata['aaData'][] = array(null, null, null, null, null, null, null, null);
+	  $gotdata['aaData'][] = array(null, null, null, null, null, null, null, null, null);
   }
   
   $gotdata['sEcho'] = intval($_POST['sEcho']);
