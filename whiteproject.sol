@@ -173,6 +173,14 @@ contract WhiteCoin is ERC20  {
        
    }
    
+   function addManager( address _address ) onlyManager {
+      manager[_address] = true;
+   }
+   
+   function removeManager( address _address ) onlyManager {
+      manager[_address] = false;
+   }
+   
    
    function removeMinter ( address _address ) onlyManager {
        

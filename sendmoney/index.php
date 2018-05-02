@@ -372,7 +372,7 @@
                     url: '/coms/mktransaction.php',
                     success: function(suc) {
                       var succ = JSON.parse(suc);
-                      console.log(JSON.stringify(suc));
+                      // console.log(JSON.stringify(suc));
                       if(succ.success == 1) {
                         $('#finalShotTitle').html('Congratulations!');
                         $('#finalShotText').html('Your payment gone!');

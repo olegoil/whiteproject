@@ -114,8 +114,22 @@ if(isset($_POST['req']) && $_POST['req'] == 'transactions') {
 
 			$amountfrom = $row_getData['amount_from'].' '.$sql->getCurrency($row_getData['currency_from']);
 			$amountto = $row_getData['amount_to'].' '.$sql->getCurrency($row_getData['currency_to']);
+
+			$walletTo = $row_getData['wallet_to'];
+			if($row_getData['notes'] == 'Request BTC to WCR') {
+
+				$query_getWalletId = "SELECT * FROM wallets WHERE userid = '".$row_getData['wallet_to']."' AND type = '0'";
+				$getWalletId = $sql->dbquery($query_getWalletId);
+				$row_getWalletId = odbc_fetch_array($getWalletId);
+				$getWalletIdRows  = odbc_num_rows($getWalletId);
+				
+				if($getWalletIdRows > 0) {
+					$walletTo = $row_getWalletId['recid'];
+				}
+
+			}
 			
-			$gotdata['aaData'][] = array($row_getData['recid'], $row_getData['userid'], $amountfrom, $amountto, $row_getData['commissions'], $row_getData['notes'], $row_getData['wallet_from'], $row_getData['wallet_to'], date('m/d/Y h:i A', $row_getData['datetime']), $row_getData['acception'], $row_getData['state'], $row_getData['transid'], $row_getData['mintreq']);
+			$gotdata['aaData'][] = array($row_getData['recid'], $row_getData['userid'], $amountfrom, $amountto, $row_getData['commissions'], $row_getData['notes'], $row_getData['wallet_from'], $walletTo, date('m/d/Y h:i A', $row_getData['datetime']), $row_getData['acception'], $row_getData['state'], $row_getData['transid'], $row_getData['mintreq']);
 		
 		} while ($row_getData = odbc_fetch_array($getData));
 	

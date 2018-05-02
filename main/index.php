@@ -40,13 +40,13 @@
               <div class="tile-stats">
                 <div class="icon"><i class="fa fa-krw"></i>
                 </div>
-                <div class="count wcrestricted"><?php echo round($sql->getBalance(0)['amount'], 8); ?></div>
+                <div class="count wcrestricted"><?php echo round($sql->getExchangeRate('USD', 'WCR')['amount1'], 3); ?></div>
 
-                <h3>WC Restricted</h3>
-                <p>Internal wallet.</p>
+                <h3>White Standard</h3>
+                <p>Exchange rate.</p>
               </div>
             </div>
-            <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <!-- <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
               <div class="tile-stats">
                 <div class="icon"><i class="fa fa-krw"></i>
                 </div>
@@ -55,25 +55,25 @@
                 <h3>WC Unrestricted</h3>
                 <p>External wallet.</p>
               </div>
-            </div>
-            <!-- <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            </div> -->
+            <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
               <div class="tile-stats">
                 <div class="icon"><i class="fa fa-bitcoin"></i>
                 </div>
-                <div class="count bitcoin"><?php echo round($sql->getBalance(2)['amount'], 8); ?></div>
+                <div class="count bitcoin"></div>
 
                 <h3>Bitcoin</h3>
-                <p>Bitcoin wallet.</p>
+                <p>Exchange rate.</p>
               </div>
-            </div> -->
+            </div>
             <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
               <div class="tile-stats">
                 <div class="icon"><i class="fa fa-inr"></i>
                 </div>
-                <div class="count ethereum"><?php echo round($sql->getBalance(3)['amount'], 8); ?></div>
+                <div class="count ether"></div>
 
                 <h3>Ethereum</h3>
-                <p>Ethereum wallet.</p>
+                <p>Exchange rate.</p>
               </div>
             </div>
           </div>
@@ -302,8 +302,6 @@
               </div>
             </div>
           </div>
-
-         
 
         </div>
 
@@ -580,6 +578,27 @@
   <!-- /datepicker -->
   <script>
     $(function() {
+      jQuery.ajax({
+        dataType: 'json',
+        type: 'get',
+        url: 'https://api.coinmarketcap.com/v2/ticker/?limit=10',
+        data: 1,
+        success: function(res) {
+          $.each(res.data, function(index, val) {
+            if(val.name == 'Bitcoin') {
+              $('.bitcoin').html(val.quotes.USD.price);
+            }
+            else if (val.name == 'Ethereum') {
+              $('.ether').html(val.quotes.USD.price);
+            }
+            // console.log(val);
+          });
+        },
+        error: function(err) {
+          console.log('ERR '+JSON.stringify(err))
+        }
+      });
+    
       setTimeout(function() {
         if(contractAddress != '0' && contractAddress != '') {
           

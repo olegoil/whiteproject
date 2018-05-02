@@ -903,7 +903,11 @@ class sql {
                         $newAmount = $rowWallet['amount'] - $rowTrans['amount_from'];
                     }
                     else {
-                        $newAmount = $rowWallet['amount'] + $rowTrans['amount_to'];
+                        $amountTo = $rowTrans['amount_to'];
+                        if($rowTrans['notes'] == 'Request BTC to WCR') {
+                            $amountTo = $amount;
+                        }
+                        $newAmount = $rowWallet['amount'] + $amountTo;
                     }
 
                     $updWallet = "UPDATE wallets SET amount='$newAmount', datetime='$when' WHERE type='0' AND userid='".$rowTrans['userid']."'";
@@ -1043,7 +1047,7 @@ class sql {
             }
         }
     }
-    // MAKE TRANSACTION
+    // MAKE PRIVATE TRANSACTION
     function makeTransaction($from, $to, $amount, $notes) {
         if(isset($_COOKIE['u']) && isset($_COOKIE['h'])) {
             $u = $_COOKIE['u'];
@@ -1062,8 +1066,8 @@ class sql {
 
                 if($rowsFromWallet > 0) {
 
-                    $recAmount = $amount*0.95;
-                    $commissions = $amount*0.05;
+                    $recAmount = $amount;
+                    $commissions = 0;
                     $when = time();
                     $recID = $this->createRecordID();
                     $queryTrans = "INSERT INTO transactions (recid, userid, amount_from, currency_from, amount_to, currency_to, notes, chain, datetime, acception, changed, transdel, wallet_from, wallet_to, commissions) VALUES ('$recID', '$u', '$amount', '".$rowFrom['type']."', '$recAmount', '".$rowFrom['type']."', '$notes', 0, '$when', 0, 0, 0, '$from', '$to', '$commissions')";
@@ -1416,7 +1420,7 @@ class sql {
         $this->sendMail($this->getUser()['user_email'], $recID, $amount, 0);
         return 1;
     }
-    // REQUEST WHITECOINS
+    // SELL REQUEST WHITECOINS
     function coinSell($bankID, $amount, $notes) {
         $u = $_COOKIE['u'];
         $h = $_COOKIE['h'];
@@ -1448,6 +1452,53 @@ class sql {
 
         $this->sendMail($this->getUser()['user_email'], $recID, $amount, 1);
     }
+    // REQUEST WHITECOINS SELLING BITCOINS
+    function coinRequestBTC($bankID, $amount, $notes, $state, $fromadr) {
+        $u = $_COOKIE['u'];
+        $h = $_COOKIE['h'];
+        $when = time();
+        $recID = $this->createRecordID();
+        $fee = str_replace(',', '.', $this->getFee('BTC', 'WCR')['fee']);
+        $recamount = $amount / 100;
+        $recamount = $recamount * (100 - $fee);
+        // GENERATE BANKWIRE CODE
+        $user = $this->getUser();
+        $transid = '';
+        $toadr = $this->getBalance(0)['recid'];
+
+        // initials
+        $initials = 'XX';
+        if(isset($user['user_name']) && $user['user_name'] != '') {
+            $initials = substr($user['user_name'], 0, 1);
+            if(isset($user['user_lastname']) && $user['user_lastname'] != '') {
+                $initials .= substr($user['user_lastname'], 0, 1);
+            }
+        }
+
+        $queryTrans = "INSERT INTO transactions (recid, userid, amount_from, currency_from, amount_to, currency_to, notes, chain, datetime, acception, changed, transdel, wallet_from, wallet_to, commissions, state) VALUES ('$recID', '$u', '$amount', 2, '$recamount', 2, '$notes', 0, '$when', 0, 0, 0, '$fromadr', '$u', '$fee', '$state')";
+        $this->dbquery($queryTrans);
+
+        return 1;
+    }
+    // SELL REQUEST WHITECOINS TO GET BITCOINS
+    // function coinSellBTC($bankID, $amount, $notes) {
+    //     $u = $_COOKIE['u'];
+    //     $h = $_COOKIE['h'];
+    //     if($this->getBalance(0)['amount'] >= $amount) {
+    //         $when = time();
+    //         $recID = $this->createRecordID();
+    //         $recamount = $amount * $this->getExchangeRate('USD', 'WCR')['amount1'];
+    //         $queryTrans = "INSERT INTO transactions (recid, userid, amount_from, currency_from, amount_to, currency_to, notes, chain, datetime, acception, changed, transdel, wallet_from, wallet_to, commissions) VALUES ('$recID', '$u', '$amount', 0, '$recamount', 5, '$notes', 0, '$when', 0, 0, 0, '$u', '$bankID', 0)";
+    //         $this->dbquery($queryTrans);
+
+    //         $this->sendMail($this->getUser()['user_email'], $recID, $amount, 5);
+
+    //         return 1;
+    //     }
+    //     else {
+    //         return 0;
+    //     }
+    // }
     // RESTRICTED TO UNRESTRICTED WHITECOIN
     function wcrtoWcur($amount) {
         $u = $_COOKIE['u'];
@@ -1623,6 +1674,179 @@ class sql {
                 $this->dbquery($updUser);
             }
         }
+    }
+    // GET FEE
+    function getFee($from, $to) {
+        $query = "SELECT * FROM fee WHERE currfrom = '$from' AND currto='$to'";
+        $checkFee = $this->dbquery($query);
+        $row = odbc_fetch_array($checkFee);
+        $rows = odbc_num_rows($checkFee);
+        if($rows > 0) {
+            return $row;
+        }
+    }
+    // SET FEE
+    function setFee($from, $to, $percent) {
+        
+        $when = time();
+
+        $query = "SELECT * FROM fee WHERE currfrom = '$from' AND currto='$to'";
+        $checkFee = $this->dbquery($query);
+        $row = odbc_fetch_array($checkFee);
+        $rows = odbc_num_rows($checkFee);
+        if($rows > 0) {
+            $queryUpd = "UPDATE fee SET fee='$percent', datetime='$when' WHERE recid='".$row['recid']."'";
+            $this->dbquery($queryUpd);
+            return 1;
+        }
+        else {
+            $recID = $this->createRecordID();
+            $queryIns = "INSERT INTO fee (recid, currfrom, currto, fee, datetime) VALUES ('$recID', '$from', '$to', '".$percent."', '$when')";
+            $this->dbquery($queryIns);
+            return 1;
+        }
+        
+    }
+    // LIST FEES
+    function listFee() {
+        $query = "SELECT * FROM fee";
+        $checkFee = $this->dbquery($query);
+        $row = odbc_fetch_array($checkFee);
+        $rows = odbc_num_rows($checkFee);
+        $result = '';
+        if($rows > 0) {
+            do {
+                $result .= '<tr>
+                <td>'.$this->currName($row['currfrom']).'</td>
+                <td>'.$this->currName($row['currto']).'</td>
+                <td>'.$row['fee'].'%</td></tr>';
+            } while ($row = odbc_fetch_array($checkFee));
+        }
+        return $result;
+    }
+    // GET EXCHANGE RATES
+    function getRates() {
+        $lasttime = time() - 600;
+        $queryCheck = "SELECT * FROM exchange WHERE currency1 != 'WCR' AND currency2 != 'WCR' AND currency1 != 'WCUR' AND currency2 != 'WCUR' AND datetime <= '$lasttime' ORDER BY datetime DESC";
+        $checkRates = $this->dbquery($queryCheck);
+        $rowFrom = odbc_fetch_array($checkRates);
+        $rowsFrom = odbc_num_rows($checkRates);
+
+        if($rowsFrom > 0) {
+            
+        }
+        else {
+            $when = time();
+            $recID = $this->createRecordID();
+            $queryTrans = "INSERT INTO exchange (recid, amount1, amount2, currency1, currency2, datetime) VALUES ('$recID', '$u', '$amount', '".$rowFrom['type']."', '$recAmount', '".$rowFrom['type']."', '$notes', 0, '$when', 0, 0, 0, '$from', '$to', '$commissions')";
+            $this->dbquery($queryTrans);
+        }
+
+    }
+    // MAKE EXCHANGE
+    function makeExchange($from, $to, $amount, $notes) {
+        if(isset($_COOKIE['u']) && isset($_COOKIE['h'])) {
+            $u = $_COOKIE['u'];
+            $h = $_COOKIE['h'];
+            $queryCheck = "SELECT * FROM wallets WHERE recid = '$from' AND userid = '$u' AND amount >= '$amount'";
+            $checkWalletFrom = $this->dbquery($queryCheck);
+            $rowFrom = odbc_fetch_array($checkWalletFrom);
+            $rowsFrom = odbc_num_rows($checkWalletFrom);
+
+            if($rowsFrom > 0) {
+
+                $queryWallet = "SELECT * FROM wallets WHERE recid = '$to'";
+                $checkWalletFrom = $this->dbquery($queryWallet);
+                $rowFromWallet = odbc_fetch_array($checkWalletFrom);
+                $rowsFromWallet = odbc_num_rows($checkWalletFrom);
+
+                if($rowsFromWallet > 0) {
+
+                    $recAmount = $amount*0.95;
+                    $commissions = $amount*0.05;
+                    $when = time();
+                    $recID = $this->createRecordID();
+                    $queryTrans = "INSERT INTO transactions (recid, userid, amount_from, currency_from, amount_to, currency_to, notes, chain, datetime, acception, changed, transdel, wallet_from, wallet_to, commissions) VALUES ('$recID', '$u', '$amount', '".$rowFrom['type']."', '$recAmount', '".$rowFrom['type']."', '$notes', 0, '$when', 0, 0, 0, '$from', '$to', '$commissions')";
+                    $this->dbquery($queryTrans);
+
+                    $newAmount = $rowFromWallet['amount']+$recAmount;
+                    $querySet = "UPDATE wallets SET amount = '$newAmount', datetime = '$when' WHERE recid = '$to'";
+                    $this->dbquery($querySet);
+
+                    $newAmount2 = $rowFrom['amount']-$amount;
+                    $querySet2 = "UPDATE wallets SET amount = '$newAmount2', datetime = '$when' WHERE recid = '$from'";
+                    $this->dbquery($querySet2);
+
+                    $this->commissionsToBank($this->getBank()['recid'], $from, $commissions);
+
+                    return 1;
+
+                }
+                else {
+                    return 2;
+                }
+
+            }
+            else {
+                return 0;
+            }
+        }
+    }
+    // CURRENCY NAME
+    function currName($name) {
+        $realName = '';
+        switch($name) {
+            case 'WCR':
+                $realName = 'White Standard Restricted';
+                break;
+            case 'WCUR':
+                $realName = 'White Standard Unrestricted';
+                break;
+            case 'ETH':
+                $realName = 'Ethereum';
+                break;
+            case 'BTC':
+                $realName = 'Bitcoin';
+                break;
+            case 'USD':
+                $realName = 'USD';
+                break;
+            case 'BA':
+                $realName = 'Bank wire';
+                break;
+            case 'CC':
+                $realName = 'Credit Card';
+                break;
+            case 'CA':
+                $realName = 'ACH';
+                break;
+            default:
+                $realName = '';
+                break;
+        }
+        return $realName;
+    }
+    // SET QUOTE
+    function setQuote($amount) {
+        
+        $when = time();
+
+        $query = "SELECT * FROM exchange WHERE currency1='USD' AND currency2='WCR'";
+        $checkFee = $this->dbquery($query);
+        $row = odbc_fetch_array($checkFee);
+        $rows = odbc_num_rows($checkFee);
+        if($rows > 0) {
+            $queryUpd = "UPDATE exchange SET amount1='$amount', datetime='$when' WHERE currency1='USD' AND currency2='WCR'";
+            $this->dbquery($queryUpd);
+            return 1;
+        }
+        else {
+            $recID = $this->createRecordID();
+            $queryIns = "INSERT INTO exchange (recid, amount1, amount2, currency1, currency2, datetime) VALUES ('$recID', '$amount', '1', 'USD', 'WCR', '$when')";
+            $this->dbquery($queryIns);
+            return 1;
+        }
+        
     }
 
 }

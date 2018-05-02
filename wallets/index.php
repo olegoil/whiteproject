@@ -623,7 +623,38 @@
     <script type="text/javascript" src="../js/app.js"></script>
 
   <script>
+
+  var exchangeeth = <?php echo $sql->getExchangeRate('USD', 'WCR')['amount1']; ?>;
+  var exchangebtc = <?php echo $sql->getExchangeRate('USD', 'WCR')['amount1']; ?>;
+  var ethercost = 1;
+  var bitcoincost = 1;
+
     $(function() {
+
+        jQuery.ajax({
+            dataType: 'json',
+            type: 'get',
+            url: 'https://api.coinmarketcap.com/v2/ticker/?limit=10',
+            data: 1,
+            success: function(res) {
+            $.each(res.data, function(index, val) {
+                if(val.name == 'Bitcoin') {
+                bitcoincost = val.quotes.USD.price;
+                // $('.bitcoin').html(val.quotes.USD.price);
+                exchangebtc = exchangebtc/bitcoincost;
+                }
+                else if (val.name == 'Ethereum') {
+                ethercost = val.quotes.USD.price;
+                // $('.ether').html(val.quotes.USD.price);
+                exchangeeth = exchangeeth/ethercost;
+                }
+                // console.log(val);
+            });
+            },
+            error: function(err) {
+            console.log('ERR '+JSON.stringify(err))
+            }
+        });
 
         // setTimeout(function() {
         //     App.getBalance();
@@ -735,7 +766,12 @@
 					title: 'Commissions', 
 					"mData": 3,
 					"mRender": function(data, type, full) {
-						return full[4];
+						if(full[5] == 'Request BTC to WCR') {
+                            return full[4] + ' %';
+                        }
+                        else {
+                            return full[4];
+                        }
 					}
 				},
 				{ 
@@ -927,6 +963,8 @@
     }
 
     function showdetails(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13) {
+        var val4var = val4;
+        var val5var = val5;
         // console.log(val11 + ' ' + val12)
         $('#myModalLabel').html('Details of MintId: <b>'+val1+'</b>');
         var detailsbody = '<table><tr><td><strong>Mint ID</strong></td><td>'+val1+'</td></tr>';
@@ -937,7 +975,13 @@
         if(val13 != 'null') {
             mintreq = '<tr><td><strong>MintRequest ID</strong></td><td>'+val13+'</td></tr>';
         }
-        detailsbody += '<tr><td><strong>User ID</strong></td><td>'+val2+'</td></tr></tr>'+mintreq+'<tr><tr><td><strong>Amount from</strong></td><td>'+val3+'</td></tr><tr><td><strong>Amount to</strong></td><td>'+val4+'</td></tr><tr><td><strong>Comissions</strong></td><td>'+val5+'</td></tr><tr><td><strong>Notes</strong></td><td>'+val6+'</td></tr><tr><td><strong>Wallet From</strong></td><td>'+val7+'</td></tr><tr><td><strong>Wallet To</strong></td><td>'+val8+'</td></tr><tr><td><strong>Date</strong></td><td>'+val9+'</td></tr><tr><td><strong>Acception</strong></td><td><span class="text-warning" style="height:25px;">Pending</span></td></tr></table>';
+        if(val6 == 'Request BTC to WCR') {
+            val4var = val4.split(' ');
+            val4var = val4var[0] / exchangebtc;
+            val4var = val4var + ' WCR';
+            val5var = val5 + ' %';
+        }
+        detailsbody += '<tr><td><strong>User ID</strong></td><td>'+val2+'</td></tr></tr>'+mintreq+'<tr><tr><td><strong>Amount from</strong></td><td>'+val3+'</td></tr><tr><td><strong>Amount to</strong></td><td>'+val4var+'</td></tr><tr><td><strong>Comissions</strong></td><td>'+val5var+'</td></tr><tr><td><strong>Notes</strong></td><td>'+val6+'</td></tr><tr><td><strong>Wallet From</strong></td><td>'+val7+'</td></tr><tr><td><strong>Wallet To</strong></td><td>'+val8+'</td></tr><tr><td><strong>Date</strong></td><td>'+val9+'</td></tr><tr><td><strong>Acception</strong></td><td><span class="text-warning" style="height:25px;">Pending</span></td></tr></table>';
         $('#detailsbody').html(detailsbody);
         $('#myModal').modal('show');
     }

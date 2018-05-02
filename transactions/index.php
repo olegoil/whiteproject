@@ -265,16 +265,16 @@
             "mRender": function(data, type, full) {
 
               var handleBtn = '&nbsp;';
-              if(full[9] == 7 && (full[5] == 'Request WCR' || full[5] == 'Sell WCR' || full[5] == 'WCR to WCUR')) {
+              if(full[9] == 7 && (full[5] == 'Request WCR' || full[5] == 'Sell WCR' || full[5] == 'WCR to WCUR' || full[5] == 'Request BTC to WCR')) {
                   handleBtn = '<span class="text-success" style="height:25px;">Aprofed Exchange</span>';
               }
-              else if((full[9] == 3 && (full[5] == 'Request WCR' || full[5] == 'Sell WCR' || full[5] == 'WCR to WCUR')) || (full[9] == 6 && (full[5] == 'Request WCR' || full[5] == 'Sell WCR' || full[5] == 'WCR to WCUR'))) {
+              else if((full[9] == 3 && (full[5] == 'Request WCR' || full[5] == 'Sell WCR' || full[5] == 'WCR to WCUR' || full[5] == 'Request BTC to WCR')) || (full[9] == 6 && (full[5] == 'Request WCR' || full[5] == 'Sell WCR' || full[5] == 'WCR to WCUR' || full[5] == 'Request BTC to WCR'))) {
                   handleBtn = '<span class="text-danger" style="height:25px;">Denied Exchange</span>';
               }
-              else if(full[5] == 'Request WCR' || full[5] == 'Sell WCR' || full[5] == 'WCR to WCUR') {
+              else if(full[5] == 'Request WCR' || full[5] == 'Sell WCR' || full[5] == 'WCR to WCUR' || full[5] == 'Request BTC to WCR') {
                 handleBtn = '<button class="btn btn-default btn-xs" style="height:25px;" onclick="showdetails(\''+full[0]+'\', \''+full[1]+'\', \''+full[2]+'\', \''+full[3]+'\', \''+full[4]+'\', \''+full[5]+'\', \''+full[6]+'\', \''+full[7]+'\', \''+full[8]+'\', \''+full[9]+'\', \''+full[10]+'\', \''+full[11]+'\'); return false;">Details</button><button class="btn btn-danger btn-xs" style="height:25px;" onclick="transdel(\''+full[0]+'\', \'0\'); return false;">Abort</button><span class="text-warning" style="height:25px;">Pending Exchange</span>';
               }
-              else if(full[5] != 'Request WCR' || full[5] != 'Sell WCR' || full[5] == 'WCR to WCUR') {
+              else if(full[5] != 'Request WCR' || full[5] != 'Sell WCR' || full[5] == 'WCR to WCUR' || full[5] == 'Request BTC to WCR') {
                 var transtype = '<span class="text-success" style="height:25px;">Received transaction</span>';
                 if(full[1] == '<?php echo $sql->getUser()['user_id'] ?>') {
                   transtype = '<span class="text-success" style="height:25px;">Sent transaction</span>';
@@ -298,16 +298,16 @@
 
     function showdetails(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12) {
       var handleBtn = '&nbsp;';
-      if(val10 == 7 && (val6 == 'Request WCR' || val6 == 'Sell WCR' || val6 == 'WCR to WCUR')) {
+      if(val10 == 7 && (val6 == 'Request WCR' || val6 == 'Sell WCR' || val6 == 'WCR to WCUR' || val6 == 'Request BTC to WCR')) {
         handleBtn = '<span class="text-success" style="height:25px;">Aprofed</span>';
       }
-      else if((val10 == 3 && (val6 == 'Request WCR' || val6 == 'Sell WCR' || val6 == 'WCR to WCUR')) || (val10 == 6 && (val6 == 'Request WCR' || val6 == 'Sell WCR' || val6 == 'WCR to WCUR'))) {
+      else if((val10 == 3 && (val6 == 'Request WCR' || val6 == 'Sell WCR' || val6 == 'WCR to WCUR' || val6 == 'Request BTC to WCR')) || (val10 == 6 && (val6 == 'Request WCR' || val6 == 'Sell WCR' || val6 == 'WCR to WCUR' || val6 == 'Request BTC to WCR'))) {
         handleBtn = '<span class="text-danger" style="height:25px;">Denied</span>';
       }
-      else if(val6 == 'Request WCR' || val6 == 'Sell WCR' || val6 == 'WCR to WCUR') {
+      else if(val6 == 'Request WCR' || val6 == 'Sell WCR' || val6 == 'WCR to WCUR' || val6 == 'Request BTC to WCR') {
         handleBtn = '<span class="text-warning" style="height:25px;">Pending</span>';
       }
-      else if(val6 != 'Request WCR' || val6 != 'Sell WCR' || val6 == 'WCR to WCUR') {
+      else if(val6 != 'Request WCR' || val6 != 'Sell WCR' || val6 == 'WCR to WCUR' || val6 == 'Request BTC to WCR') {
         handleBtn = '<span class="text-success" style="height:25px;">Received transaction</span>';
         if(val2 == '<?php echo $sql->getUser()['user_id'] ?>') {
           handleBtn = '<span class="text-success" style="height:25px;">Sent transaction</span>';

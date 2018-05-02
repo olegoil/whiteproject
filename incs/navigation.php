@@ -48,6 +48,8 @@
               <?php if($sql->checkLevel() == 1) { ?>
                 <li><a href="../mintrequests/">Mint requests</a>
                 </li>
+                <li><a href="../transfees/">Transaction Fees</a>
+                </li>
               <?php } ?>
               <?php if($sql->checkLevel() == 2) { ?>
                 <li><a href="../wallets/">Bank</a>

@@ -31,7 +31,8 @@ window.App = {
     // Инициализирует скрипт
     init: function () {
         WhiteContract = web3.eth.contract(ABI);
-        WhiteCoin = WhiteContract.at('0x637AAc4a0f5268377c14979baaBb746BcC6eA4BF');
+        WhiteCoin = WhiteContract.at('0x838C133dA3C493D728d49FA94f4f9B1930651e2a');
+        // 0x637AAc4a0f5268377c14979baaBb746BcC6eA4BF
         // 0xCAA3FbCC5eC1B61dD2762A6B905A3a400c9b199C
         // 0x85c015a9e36eb50c574b3b6a049be05c62f0e938
     },

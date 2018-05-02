@@ -147,7 +147,37 @@
   <script type="text/javascript" src="../js/app.js"></script>
   <script>
 
+  var exchangeeth = <?php echo $sql->getExchangeRate('USD', 'WCR')['amount1']; ?>;
+  var exchangebtc = <?php echo $sql->getExchangeRate('USD', 'WCR')['amount1']; ?>;
+  var ethercost = 1;
+  var bitcoincost = 1;
+
   $(function() {
+
+      jQuery.ajax({
+        dataType: 'json',
+        type: 'get',
+        url: 'https://api.coinmarketcap.com/v2/ticker/?limit=10',
+        data: 1,
+        success: function(res) {
+          $.each(res.data, function(index, val) {
+            if(val.name == 'Bitcoin') {
+              bitcoincost = val.quotes.USD.price;
+              // $('.bitcoin').html(val.quotes.USD.price);
+              exchangebtc = exchangebtc/bitcoincost;
+            }
+            else if (val.name == 'Ethereum') {
+              ethercost = val.quotes.USD.price;
+              // $('.ether').html(val.quotes.USD.price);
+              exchangeeth = exchangeeth/ethercost;
+            }
+            // console.log(val);
+          });
+        },
+        error: function(err) {
+          console.log('ERR '+JSON.stringify(err))
+        }
+      });
 
       setTimeout(function() {
         App.getEtherBalance();
@@ -259,7 +289,12 @@
             title: 'Commissions', 
             "mData": 3,
             "mRender": function(data, type, full) {
-              return full[4];
+              if(full[5] == 'Request BTC to WCR') {
+                return full[4] + ' %';
+              }
+              else {
+                return full[4];
+              }
             }
           },
           { 
@@ -287,6 +322,9 @@
                   if(full[5] == 'WCR to WCUR') {
                     clickaction = 'onclick="transallow2(\''+full[0]+'\', \''+full[2]+'\', \''+full[7]+'\', \''+full[3]+'\', \''+full[12]+'\'); return false;"';
                     clickaction2 = 'onclick="transdeny2(\''+full[0]+'\', \'0\', \''+full[12]+'\'); return false;"';
+                  }
+                  if(full[5] == 'Request BTC to WCR') {
+                    clickaction = 'onclick="transallow3(\''+full[0]+'\', \''+full[3]+'\'); return false;"';
                   }
                   handleBtn = '<button class="btn btn-default btn-xs" style="height:25px;" onclick="showdetails(\''+full[0]+'\', \''+full[1]+'\', \''+full[2]+'\', \''+full[3]+'\', \''+full[4]+'\', \''+full[5]+'\', \''+full[6]+'\', \''+full[7]+'\', \''+full[8]+'\', \''+full[9]+'\', \''+full[10]+'\', \''+full[11]+'\', \''+full[12]+'\'); return false;">Details</button><button class="btn btn-success btn-xs" style="height:25px;" '+clickaction+'>Allow</button><button class="btn btn-danger btn-xs" style="height:25px;" '+clickaction2+'>Deny</button>';
               }
@@ -342,7 +380,17 @@
     App.isManagerDeny(val1, val2, val3, val4, val5);
   }
 
+  function transallow3(val1, val3) {
+    var val3var = val3.split(' ');
+    val3var = val3var[0] / exchangebtc;
+    if(confirm("Allow this transaction "+val1)) {
+        ajaxSend(val1, val3var);
+    }
+  }
+
   function showdetails(val1, val2, val3, val4, val5, val6, val7, val8, val9, val10, val11, val12, val13) {
+      var val4var = val4;
+      var val5var = val5;
       $('#myModalLabel').html('Details of MintId: <b>'+val1+'</b>');
       var detailsbody = '<table><tr><td><strong>Mint ID</strong></td><td>'+val1+'</td></tr>';
       var mintreq = '';
@@ -352,7 +400,13 @@
       if(val13 != 'null') {
         mintreq = '<tr><td><strong>MintRequest ID</strong></td><td>'+val13+'</td></tr>';
       }
-      detailsbody += '<tr><td><strong>User ID</strong></td><td>'+val2+'</td></tr>'+mintreq+'<tr><td><strong>Amount from</strong></td><td>'+val3+'</td></tr><tr><td><strong>Amount to</strong></td><td>'+val4+'</td></tr><tr><td><strong>Comissions</strong></td><td>'+val5+'</td></tr><tr><td><strong>Notes</strong></td><td>'+val6+'</td></tr><tr><td><strong>Wallet From</strong></td><td>'+val7+'</td></tr><tr><td><strong>Wallet To</strong></td><td>'+val8+'</td></tr><tr><td><strong>Date</strong></td><td>'+val9+'</td></tr><tr><td><strong>Acception</strong></td><td>Pending</td></tr></table>';
+      if(val6 == 'Request BTC to WCR') {
+        val4var = val4.split(' ');
+        val4var = val4var[0] / exchangebtc;
+        val4var = val4var + ' WCR';
+        val5var = val5 + ' %';
+      }
+      detailsbody += '<tr><td><strong>User ID</strong></td><td>'+val2+'</td></tr>'+mintreq+'<tr><td><strong>Amount from</strong></td><td>'+val3+'</td></tr><tr><td><strong>Amount to</strong></td><td>'+val4var+'</td></tr><tr><td><strong>Comissions</strong></td><td>'+val5var+'</td></tr><tr><td><strong>Notes</strong></td><td>'+val6+'</td></tr><tr><td><strong>Wallet From</strong></td><td>'+val7+'</td></tr><tr><td><strong>Wallet To</strong></td><td>'+val8+'</td></tr><tr><td><strong>Date</strong></td><td>'+val9+'</td></tr><tr><td><strong>Acception</strong></td><td>Pending</td></tr></table>';
       $('#detailsbody').html(detailsbody);
       $('#myModal').modal('show');
   }

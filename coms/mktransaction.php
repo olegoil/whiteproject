@@ -54,6 +54,12 @@ if(isset($_POST['act']) && isset($_POST['amnt'])) {
   else if($act == 'sellwc') {
     $success = $sql->coinSell($sql->adminGetBank()['recid'], $amount, 'Sell WCR');
   }
+  else if($act == 'btcreqwc') {
+    $success = $sql->coinRequestBTC($sql->adminGetBank()['recid'], $amount, 'Request BTC to WCR', $state, $fromadr);
+  }
+  // else if($act == 'btcsellwc') {
+  //   $success = $sql->coinSellBTC($sql->adminGetBank()['recid'], $amount, 'Sell WCR to BTC');
+  // }
   else if($act == 'reqwcur') {
     $success = $sql->coinRequestUR($sql->adminGetBank()['recid'], $amount, 'Request WCUR');
   }
@@ -92,6 +98,12 @@ if(isset($_POST['act']) && isset($_POST['amnt'])) {
   }
   else if($act == 'minterrest') {
     $sql->minterRest($amount, $to, $fromadr);
+  }
+  else if($act == 'feeset') {
+    $success = $sql->setFee($fromadr, $to, $amount);
+  }
+  else if($act == 'quoteset') {
+    $success = $sql->setQuote($amount);
   }
 
   $str = array('success' => $success);
