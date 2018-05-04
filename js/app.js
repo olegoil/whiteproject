@@ -853,7 +853,7 @@ window.App = {
             // TODO: Добавить сюда обработку результата
 
             new PNotify({
-                title: "Minting request sended",
+                title: "Minting request sent",
                 type: "success",
                 text: "Please wait for transaction complete! Do not refresh or leave this view!",
                 nonblock: {

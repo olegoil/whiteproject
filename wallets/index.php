@@ -944,11 +944,11 @@
     }
 
     function transallow2(val1, val2, val3) {
-        // if(confirm("Allow this transaction "+val1)) {
+        if(confirm("Allow this transaction "+val1)) {
             var val2 = val2.split(' ')[0];
-            console.log(val2)
+            // console.log(val2)
             App.mintingRequest(val1, val2, val3);
-        // }
+        }
     }
 
     function transdeny(val1, val2) {

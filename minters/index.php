@@ -37,9 +37,9 @@
           <div class="page-title">
             <div class="title_left">
                 <h3>
-                    Users
+                    Minters
                     <small>
-                        A list of users
+                        
                     </small>
 					<button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#minterModal">Create Minter</button>
                 </h3>
@@ -551,10 +551,10 @@
 							btns += '<button class="btn btn-danger btn-xs" style="height:25px;" onclick="remminter(\''+full[0]+'\', \''+full[22]+'\'); return false;">Remove Minter</button>';
 							if(full[21] == full[22]) {
 								if(full[21] != null && full[22] != null) {
-									btns += '<button class="btn btn-warning btn-xs" style="height:25px;" onclick="mkrestricted(\''+full[0]+'\', \''+full[22]+'\'); return false;">Make Restricted</button>';
+									btns += '<button class="btn btn-warning btn-xs" style="height:25px;" onclick="mkrestricted(\''+full[0]+'\', \''+full[22]+'\'); return false;">Revoke Privilege</button>';
 								}
 								else {
-									btns += '<button class="btn btn-success btn-xs" style="height:25px;" onclick="mkunrestricted(\''+full[0]+'\', \''+full[22]+'\'); return false;">Make Unrestricted</button>';
+									btns += '<button class="btn btn-success btn-xs" style="height:25px;" onclick="mkunrestricted(\''+full[0]+'\', \''+full[22]+'\'); return false;">Deploy Privilege</button>';
 								}
 							}
 							else {
