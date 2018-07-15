@@ -2,13 +2,13 @@
 
 class sql {
 
-    var $serverName = "BlockChain5-SQL";
-    var $database = "WhiteCoin";
-    var $user= "sa";
-    var $password = "Pos!2014";
-    var $hostname = "olegtronics.com";
-    var $salt = 'bestprojectever';
-    var $key = 'whiteprojectforever';
+    var $serverName = "somesql";
+    var $database = "somedb";
+    var $user= "someuser";
+    var $password = "somepassword";
+    var $hostname = "somehost";
+    var $salt = 'somesalt';
+    var $key = 'somekey';
     var $conn;
 
     // PROTECT FUNCTION FROM INJECTION, ETC (TO SAVE STRINGS IN DB)
